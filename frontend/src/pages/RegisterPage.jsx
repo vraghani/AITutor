@@ -146,7 +146,7 @@ const RegisterPage = () => {
                 value={formData.password}
                 onChange={handleChange}
                 className="pl-10"
-                placeholder="••••••••"
+                placeholder="········"
                 required
               />
             </div>
@@ -163,7 +163,7 @@ const RegisterPage = () => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 className="pl-10"
-                placeholder="••••••••"
+                placeholder="········"
                 required
               />
             </div>
