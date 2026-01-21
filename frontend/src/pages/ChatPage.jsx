@@ -104,10 +104,9 @@ const ChatPage = () => {
 
   return (
     <Layout>
-      <div className=\"max-w-6xl mx-auto\">
-        <div className=\"mb-6\">
-          <h1 className=\"text-3xl font-bold text-gray-900 mb-2\">AI Tutor Chat</h1>
-          <p className=\"text-gray-600\">Ask questions, get summaries, and clarify your doubts</p>
+      <div className="max-w-6xl mx-auto">\n        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">AI Tutor Chat</h1>
+          <p className="text-gray-600">Ask questions, get summaries, and clarify your doubts</p>
         </div>
 
         <div className=\"grid grid-cols-1 lg:grid-cols-3 gap-6\">
