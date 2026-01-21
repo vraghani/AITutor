@@ -109,9 +109,9 @@ const ChatPage = () => {
           <p className="text-gray-600">Ask questions, get summaries, and clarify your doubts</p>
         </div>
 
-        <div className=\"grid grid-cols-1 lg:grid-cols-3 gap-6\">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Chat Area */}
-          <Card className=\"lg:col-span-2 flex flex-col\" style={{ height: '70vh' }}>
+          <Card className="lg:col-span-2 flex flex-col" style={{ height: '70vh' }}>
             {/* Chat Header */}
             <div className=\"p-4 border-b flex items-center justify-between\">
               <div className=\"flex items-center gap-2\">
