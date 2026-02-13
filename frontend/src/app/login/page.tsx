@@ -25,10 +25,10 @@ export default function LoginPage() {
 
     try {
       await login(email, password);
-      router.push('/dashboard');
+      // Use window.location for reliable redirect after auth
+      window.location.href = '/dashboard';
     } catch (err: any) {
       setError(err.message || 'Invalid credentials');
-    } finally {
       setLoading(false);
     }
   };
