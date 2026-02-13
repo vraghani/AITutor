@@ -2,6 +2,7 @@
 """
 AI Tutor Application Backend API Testing Script
 Tests Next.js 16 API routes with SQLite database
+Uses cookie-based authentication
 """
 
 import requests
@@ -15,8 +16,8 @@ BASE_URL = "http://localhost:3000"
 class APITester:
     def __init__(self):
         self.session = requests.Session()
-        self.auth_token = None
-        self.admin_token = None
+        self.student_session = requests.Session()
+        self.admin_session = requests.Session()
         self.test_results = []
         
     def log_test(self, test_name: str, success: bool, details: str = ""):
@@ -31,15 +32,17 @@ class APITester:
             "details": details
         })
         
-    def make_request(self, method: str, endpoint: str, data: Dict = None, headers: Dict = None) -> tuple:
+    def make_request(self, method: str, endpoint: str, data: Dict = None, session: requests.Session = None) -> tuple:
         """Make HTTP request and return (success, response, status_code)"""
         url = f"{BASE_URL}{endpoint}"
+        if session is None:
+            session = self.session
         
         try:
             if method.upper() == "GET":
-                response = self.session.get(url, headers=headers)
+                response = session.get(url)
             elif method.upper() == "POST":
-                response = self.session.post(url, json=data, headers=headers)
+                response = session.post(url, json=data)
             else:
                 return False, None, 0
                 
@@ -80,12 +83,11 @@ class APITester:
             "password": "student123"
         }
         
-        success, response, status = self.make_request("POST", "/api/auth/login", login_data)
+        success, response, status = self.make_request("POST", "/api/auth/login", login_data, self.student_session)
         if success and status == 200:
             try:
                 data = response.json()
                 if "token" in data and "user" in data:
-                    self.auth_token = data["token"]
                     self.log_test("Student Login", True, f"Logged in as: {data['user']['email']}")
                 else:
                     self.log_test("Student Login", False, "Missing token or user in response")
@@ -94,23 +96,19 @@ class APITester:
         else:
             self.log_test("Student Login", False, f"Status: {status}, Response: {response}")
         
-        # Test 3: Get current user info
-        if self.auth_token:
-            headers = {"Authorization": f"Bearer {self.auth_token}"}
-            success, response, status = self.make_request("GET", "/api/auth/me", headers=headers)
-            if success and status == 200:
-                try:
-                    data = response.json()
-                    if "user" in data:
-                        self.log_test("Get Current User", True, f"User: {data['user']['email']}")
-                    else:
-                        self.log_test("Get Current User", False, "Missing user in response")
-                except:
-                    self.log_test("Get Current User", False, "Invalid JSON response")
-            else:
-                self.log_test("Get Current User", False, f"Status: {status}")
+        # Test 3: Get current user info (using student session)
+        success, response, status = self.make_request("GET", "/api/auth/me", session=self.student_session)
+        if success and status == 200:
+            try:
+                data = response.json()
+                if "user" in data:
+                    self.log_test("Get Current User", True, f"User: {data['user']['email']}")
+                else:
+                    self.log_test("Get Current User", False, "Missing user in response")
+            except:
+                self.log_test("Get Current User", False, "Invalid JSON response")
         else:
-            self.log_test("Get Current User", False, "No auth token available")
+            self.log_test("Get Current User", False, f"Status: {status}")
         
         # Test 4: Admin login for later tests
         admin_login_data = {
@@ -118,12 +116,11 @@ class APITester:
             "password": "admin123"
         }
         
-        success, response, status = self.make_request("POST", "/api/auth/login", admin_login_data)
+        success, response, status = self.make_request("POST", "/api/auth/login", admin_login_data, self.admin_session)
         if success and status == 200:
             try:
                 data = response.json()
                 if "token" in data:
-                    self.admin_token = data["token"]
                     self.log_test("Admin Login", True, f"Admin logged in: {data['user']['email']}")
                 else:
                     self.log_test("Admin Login", False, "Missing token in response")
@@ -136,27 +133,21 @@ class APITester:
         """Test self assessment endpoints"""
         print("\n📊 Testing Self Assessment API...")
         
-        if not self.auth_token:
-            self.log_test("Self Assessment Tests", False, "No auth token available")
-            return
-        
-        headers = {"Authorization": f"Bearer {self.auth_token}"}
-        
-        # Test 1: Create self assessment
+        # Test 1: Create self assessment (using student session)
         assessment_data = {
             "subject": "Mathematics",
             "topic": "Algebra",
             "level": "intermediate"
         }
         
-        success, response, status = self.make_request("POST", "/api/assessments", assessment_data, headers)
+        success, response, status = self.make_request("POST", "/api/assessments", assessment_data, self.student_session)
         if success and status == 200:
             self.log_test("Create Self Assessment", True, "Assessment created successfully")
         else:
             self.log_test("Create Self Assessment", False, f"Status: {status}")
         
-        # Test 2: Get assessments
-        success, response, status = self.make_request("GET", "/api/assessments", headers=headers)
+        # Test 2: Get assessments (using student session)
+        success, response, status = self.make_request("GET", "/api/assessments", session=self.student_session)
         if success and status == 200:
             try:
                 data = response.json()
@@ -173,7 +164,7 @@ class APITester:
         """Test books endpoints"""
         print("\n📚 Testing Books API...")
         
-        # Test 1: Get all books
+        # Test 1: Get all books (no auth required)
         success, response, status = self.make_request("GET", "/api/books")
         if success and status == 200:
             try:
@@ -213,7 +204,7 @@ class APITester:
         """Test quizzes endpoints"""
         print("\n🧩 Testing Quizzes API...")
         
-        # Test 1: Get all quizzes
+        # Test 1: Get all quizzes (no auth required)
         success, response, status = self.make_request("GET", "/api/quizzes")
         if success and status == 200:
             try:
@@ -226,8 +217,8 @@ class APITester:
                     if quiz_count >= 3:
                         self.log_test("Seeded Quizzes Count", True, f"Expected 3+ quizzes, found {quiz_count}")
                         
-                        # Test quiz attempt if we have quizzes and auth token
-                        if self.auth_token and quiz_count > 0:
+                        # Test quiz attempt if we have quizzes
+                        if quiz_count > 0:
                             quiz_id = data["quizzes"][0]["id"]
                             self.test_quiz_attempt(quiz_id)
                     else:
@@ -241,16 +232,11 @@ class APITester:
     
     def test_quiz_attempt(self, quiz_id: str):
         """Test quiz attempt submission"""
-        if not self.auth_token:
-            self.log_test("Quiz Attempt", False, "No auth token available")
-            return
-        
-        headers = {"Authorization": f"Bearer {self.auth_token}"}
         attempt_data = {
             "answers": [1, 1, 1, 1, 1]  # Submit answers for 5 questions
         }
         
-        success, response, status = self.make_request("POST", f"/api/quizzes/{quiz_id}/attempt", attempt_data, headers)
+        success, response, status = self.make_request("POST", f"/api/quizzes/{quiz_id}/attempt", attempt_data, self.student_session)
         if success and status == 200:
             try:
                 data = response.json()
@@ -268,26 +254,19 @@ class APITester:
         """Test AI chat endpoints"""
         print("\n🤖 Testing AI Chat API...")
         
-        if not self.auth_token:
-            self.log_test("AI Chat Tests", False, "No auth token available")
-            return
-        
-        headers = {"Authorization": f"Bearer {self.auth_token}"}
-        
-        # Test 1: Send chat message
+        # Test 1: Send chat message (using student session)
         chat_data = {
             "message": "Explain quadratic equations",
             "context_type": "doubt",
             "subject": "Mathematics"
         }
         
-        success, response, status = self.make_request("POST", "/api/chat", chat_data, headers)
+        success, response, status = self.make_request("POST", "/api/chat", chat_data, self.student_session)
         if success and status == 200:
             try:
                 data = response.json()
                 if "response" in data and "session_id" in data:
                     self.log_test("AI Chat Message", True, f"Got AI response, Session: {data['session_id'][:8]}...")
-                    self.session_id = data["session_id"]
                 else:
                     self.log_test("AI Chat Message", False, "Missing response or session_id")
             except:
@@ -299,8 +278,8 @@ class APITester:
             else:
                 self.log_test("AI Chat Message", False, f"Status: {status}")
         
-        # Test 2: Get chat sessions
-        success, response, status = self.make_request("GET", "/api/chat/sessions", headers=headers)
+        # Test 2: Get chat sessions (using student session)
+        success, response, status = self.make_request("GET", "/api/chat/sessions", session=self.student_session)
         if success and status == 200:
             try:
                 data = response.json()
@@ -317,14 +296,8 @@ class APITester:
         """Test content verification endpoints (admin only)"""
         print("\n✅ Testing Content Verification API...")
         
-        if not self.admin_token:
-            self.log_test("Content Verification Tests", False, "No admin token available")
-            return
-        
-        headers = {"Authorization": f"Bearer {self.admin_token}"}
-        
-        # Test 1: Get pending content
-        success, response, status = self.make_request("GET", "/api/content/verify?status=pending", headers=headers)
+        # Test 1: Get pending content (using admin session)
+        success, response, status = self.make_request("GET", "/api/content/verify?status=pending", session=self.admin_session)
         if success and status == 200:
             try:
                 data = response.json()
@@ -347,13 +320,8 @@ class APITester:
         """Test dashboard statistics endpoint"""
         print("\n📈 Testing Dashboard Stats API...")
         
-        if not self.auth_token:
-            self.log_test("Dashboard Stats", False, "No auth token available")
-            return
-        
-        headers = {"Authorization": f"Bearer {self.auth_token}"}
-        
-        success, response, status = self.make_request("GET", "/api/dashboard/stats", headers=headers)
+        # Using student session
+        success, response, status = self.make_request("GET", "/api/dashboard/stats", session=self.student_session)
         if success and status == 200:
             try:
                 data = response.json()
