@@ -110,7 +110,7 @@ export async function POST(request: Request) {
     // Call LLM API via Emergent Integration Proxy
     const INTEGRATION_PROXY_URL = process.env.INTEGRATION_PROXY_URL || 'https://integrations.emergentagent.com';
     
-    const response = await fetch(`${INTEGRATION_PROXY_URL}/openai/v1/chat/completions`, {
+    const response = await fetch(`${INTEGRATION_PROXY_URL}/llm/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
