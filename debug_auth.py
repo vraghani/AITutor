@@ -26,10 +26,11 @@ def debug_auth():
         token = data.get('token')
         print(f"Token received: {token[:50]}...")
         
-        # Manually set the cookie with correct domain
+        # Clear existing cookies and set new one
+        session.cookies.clear()
         session.cookies.set('token', token, domain='localhost', path='/')
         
-        print(f"Session cookies after manual set: {dict(session.cookies)}")
+        print(f"Session cookies after manual set: {len(session.cookies)} cookies")
         
         # Test /me endpoint
         print("\n🔍 Testing /me endpoint...")
