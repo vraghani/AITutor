@@ -231,15 +231,18 @@ backend:
 frontend:
   - task: "Login and Registration Pages"
     implemented: true
-    working: "NA"
+    working: true
     file: "src/app/login/page.tsx, src/app/register/page.tsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Styled with Tailwind, role selection for registration"
+      - working: true
+        agent: "testing"
+        comment: "Login functionality working correctly. Successfully logged in with student credentials. The login screen is well designed with proper error handling. Logout functionality also working correctly."
 
   - task: "Dashboard with Progress Tracking"
     implemented: true
