@@ -113,7 +113,7 @@ export default function BooksPage() {
                   <SelectValue placeholder="Board" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value=" ">All Boards</SelectItem>
+                  <SelectItem value="">All Boards</SelectItem>
                   <SelectItem value="CBSE">CBSE</SelectItem>
                   <SelectItem value="ICSE">ICSE</SelectItem>
                 </SelectContent>
@@ -123,7 +123,7 @@ export default function BooksPage() {
                   <SelectValue placeholder="Subject" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value=" ">All Subjects</SelectItem>
+                  <SelectItem value="">All Subjects</SelectItem>
                   <SelectItem value="Mathematics">Mathematics</SelectItem>
                   <SelectItem value="Science">Science</SelectItem>
                   <SelectItem value="Physics">Physics</SelectItem>
