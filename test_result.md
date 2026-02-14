@@ -246,6 +246,9 @@ frontend:
       - working: true
         agent: "testing"
         comment: "Login functionality working correctly. Successfully logged in with student credentials. The login screen is well designed with proper error handling. Logout functionality also working correctly."
+      - working: true
+        agent: "testing"
+        comment: "Thoroughly tested login redirect issue. The login page correctly redirects to the dashboard after successful authentication. Auth token cookie is properly set. Multiple login attempts all succeeded with consistent behavior, properly redirecting to /dashboard. No issues found with login redirect flow."
 
   - task: "Dashboard with Progress Tracking"
     implemented: true
