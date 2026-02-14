@@ -361,7 +361,7 @@ test_plan:
     - "AI Chat with Socratic Tutoring using EMERGENT_LLM_KEY"
     - "All Frontend Pages and User Flows"
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
