@@ -261,15 +261,18 @@ frontend:
 
   - task: "Self Assessment Page"
     implemented: true
-    working: "NA"
+    working: true
     file: "src/app/assessment/page.tsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Level selection UI with subject/topic dropdowns"
+      - working: true
+        agent: "testing"
+        comment: "Self assessment functionality working correctly. Successfully created assessment for Mathematics/Algebra/Intermediate level. Assessment displays properly in the list after creation, showing correct subject, topic, and level."
 
   - task: "AI Tutor Chat Page"
     implemented: true
