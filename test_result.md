@@ -272,7 +272,7 @@ frontend:
         comment: "Level selection UI with subject/topic dropdowns"
       - working: true
         agent: "testing"
-        comment: "Self assessment functionality working correctly. Successfully created assessment for Mathematics/Algebra/Intermediate level. Assessment displays properly in the list after creation, showing correct subject, topic, and level."
+        comment: "Self Assessment functionality is working correctly. Successfully created an assessment for Physics/Motion/Beginner level. The assessment displays in the list after creation, showing correct subject, topic, and level. The page already shows existing assessments for Mathematics/Algebra (Intermediate) and now Physics/Motion (Beginner)."
 
   - task: "AI Tutor Chat Page"
     implemented: true
