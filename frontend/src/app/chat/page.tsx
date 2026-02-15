@@ -85,7 +85,9 @@ export default function ChatPage() {
 
   const fetchSessions = async () => {
     try {
-      const res = await fetch('/api/chat/sessions');
+      const res = await fetch('/api/chat/sessions', {
+        credentials: 'include'
+      });
       if (res.ok) {
         const data = await res.json();
         setSessions(data.sessions || []);
@@ -97,7 +99,9 @@ export default function ChatPage() {
 
   const loadSession = async (id: string) => {
     try {
-      const res = await fetch(`/api/chat/sessions/${id}`);
+      const res = await fetch(`/api/chat/sessions/${id}`, {
+        credentials: 'include'
+      });
       if (res.ok) {
         const data = await res.json();
         setMessages(data.messages.map((m: any) => ({
@@ -135,6 +139,7 @@ export default function ChatPage() {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           message: inputMessage,
           session_id: sessionId,
