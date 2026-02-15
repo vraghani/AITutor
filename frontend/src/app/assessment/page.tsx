@@ -60,7 +60,9 @@ export default function AssessmentPage() {
   const fetchAssessments = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/assessments');
+      const res = await fetch('/api/assessments', {
+        credentials: 'include'
+      });
       if (res.ok) {
         const data = await res.json();
         setAssessments(data.assessments || []);
@@ -80,6 +82,7 @@ export default function AssessmentPage() {
       const res = await fetch('/api/assessments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           subject: selectedSubject,
           topic: selectedTopic,
