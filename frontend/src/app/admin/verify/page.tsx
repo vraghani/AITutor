@@ -84,7 +84,9 @@ export default function VerifyPage() {
   const fetchPendingContent = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/content/verify?status=pending');
+      const res = await fetch('/api/content/verify?status=pending', {
+        credentials: 'include'
+      });
       if (res.ok) {
         const data = await res.json();
         setBooks(data.books || []);
@@ -106,6 +108,7 @@ export default function VerifyPage() {
       const res = await fetch('/api/content/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           content_type: selectedItem.type,
           content_id: selectedItem.item.id,
